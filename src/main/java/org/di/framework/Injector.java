@@ -98,21 +98,19 @@ public class Injector {
 			Collection<Class<?>> types = result.getClasses();
 			for (Class<?> implementationClass : types) {
 				Class<?>[] interfaces = implementationClass.getInterfaces();
-				if (interfaces.length == 0) { // interface가 존재x -> client라는 의미이다. //maybe not.. so confusing.
+				//diMap : Map<Class<?>, Class<?>>
+				if (interfaces.length == 0) {
 					diMap.put(implementationClass, implementationClass);
-				} else { //interface가 존재 -> service라는 의미이다.
+				} else {
 					for (Class<?> iface : interfaces) {
-						diMap.put(implementationClass, iface); //diMap : Map<Class<?>, Class<?>>
-						/**음.. spring에서는 인터페이스형으로 안하고 클래스 자체로 해도 되던데..
-						 * 근데 인터페이스로만 접근한다는 원칙이 있었던 것 같기도 하고..
-						 */
+						diMap.put(implementationClass, iface);
 					}
 				}
 			}
 
 			for (Class<?> classz : classes) {
-				if (classz.isAnnotationPresent(Component.class)) { //Component가 존재하면
-					Object classInstance = classz.newInstance(); //해당 class의 instance 생성
+				if (classz.isAnnotationPresent(Component.class)) { //if @Component is present
+					Object classInstance = classz.newInstance(); //make instance of the class
 					applicationScope.put(classz, classInstance); //applicationScope : Map<Class<?>, Object>
 					InjectionUtil.autowire(this, classz, classInstance); //autowire method of InjectionUtil is static method
 				}
